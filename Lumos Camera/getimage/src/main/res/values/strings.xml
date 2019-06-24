@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GetImage</string>
+    <string name="add_image_from_camera_dialog_title">Create new image</string>
+    <string name="add_image_from_gallery_dialog_title">Add from gallery</string>
+</resources>

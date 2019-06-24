@@ -1,0 +1,93 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'realm-android'
+
+Properties props = new Properties()
+InputStream ins = new FileInputStream("../../data.properties")
+props.load(ins)
+ins.close()
+
+android {
+    compileSdkVersion compileSdk
+    dataBinding.enabled = true
+    defaultConfig {
+        applicationId "com.grumpyshoe.lumos"
+        minSdkVersion minSdk
+        buildToolsVersion buildTools
+        targetSdkVersion targetSdk
+        versionCode 1
+        versionName "1.0.0 ("+buildNumber+")"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+    }
+
+    signingConfigs {
+        release {
+            storeFile file('../../../lumos.jks')
+            storePassword props["KEY_STORE_PASSWD"]
+            keyAlias "lumos_key0"
+            keyPassword props["KEY_ALIAS_PASSWD"]
+        }
+    }
+
+    buildTypes {
+        release {
+            debuggable true
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+
+configurations {
+    ktlint
+}
+
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Kotlin code style."
+    main = "com.github.shyiko.ktlint.Main"
+    classpath = configurations.ktlint
+    args "src/**/*.kt"
+    // to generate report in checkstyle format prepend following args:
+    // "--reporter=plain", "--reporter=checkstyle,output=${buildDir}/ktlint.xml"
+    // see https://github.com/shyiko/ktlint#usage for more
+}
+check.dependsOn ktlint
+
+task ktlintFormat(type: JavaExec, group: "formatting") {
+    description = "Fix Kotlin code style deviations."
+    main = "com.github.shyiko.ktlint.Main"
+    classpath = configurations.ktlint
+    args "-F", "src/**/*.kt"
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation libs.appcompat
+    implementation libs.core_ktx
+    implementation libs.material
+    implementation libs.constraint_layout
+    implementation libs.vectordrawable
+    implementation libs.dagger
+    implementation libs.retrofit
+    implementation libs.retrofit_converter
+    implementation libs.anko
+    implementation libs.logging_interceptor
+    implementation libs.imagemanager
+    implementation libs.bonjourconnect
+    implementation libs.work_runtime_ktx
+    implementation libs.lifecycle_extensions
+    kapt libs.dagger_compiler
+    ktlint libs.ktlint
+    testImplementation libs.junit
+    testImplementation libs.mockito_kotlin
+    testImplementation libs.test_runner
+    testImplementation libs.core_testing
+    androidTestImplementation libs.test_runner
+    androidTestImplementation libs.espresso_core
+}
