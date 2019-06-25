@@ -17,7 +17,7 @@ android {
         minSdkVersion minSdk
         buildToolsVersion buildTools
         targetSdkVersion targetSdk
-        versionCode 1
+        versionCode buildNumber
         versionName "1.0.0 ("+buildNumber+")"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
